@@ -1,4 +1,4 @@
-package com.btuso.testament.factory.gamescene;
+package com.btuso.testament.scene.gamescene.factory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +18,7 @@ import android.content.res.AssetManager;
 
 import com.btuso.testament.GameContext;
 import com.btuso.testament.factory.TextureType;
+import com.btuso.testament.scene.gamescene.GameSceneAssets;
 
 public class GameSceneTextureFactory {
 

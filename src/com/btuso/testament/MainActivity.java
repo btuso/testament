@@ -13,7 +13,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
-import com.btuso.testament.scene.GameScene;
+import com.btuso.testament.scene.gamescene.GameScene;
 
 public class MainActivity extends SimpleBaseGameActivity {
 

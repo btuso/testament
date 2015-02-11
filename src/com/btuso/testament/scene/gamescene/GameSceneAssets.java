@@ -1,4 +1,4 @@
-package com.btuso.testament.factory.gamescene;
+package com.btuso.testament.scene.gamescene;
 
 import com.btuso.testament.factory.Resources;
 import com.btuso.testament.factory.TextureType;
