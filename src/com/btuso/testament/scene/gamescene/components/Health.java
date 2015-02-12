@@ -2,8 +2,7 @@ package com.btuso.testament.scene.gamescene.components;
 
 import org.andengine.engine.handler.IUpdateHandler;
 
-import android.util.Log;
-
+import com.btuso.testament.Logger;
 import com.btuso.testament.mediator.Data;
 import com.btuso.testament.mediator.EntityDataMediator;
 import com.btuso.testament.mediator.QueuedDataListener;
@@ -19,7 +18,7 @@ public class Health implements IUpdateHandler {
     @Override
     public void onUpdate(float pSecondsElapsed) {
         if (dataQueue.contains(Data.HIT)) {
-            Log.d("Mediator", "Hit");
+            Logger.log("Hit");
         }
         dataQueue.clearQueue();
     }

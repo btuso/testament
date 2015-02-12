@@ -1,7 +1,8 @@
 package com.btuso.testament.scene.gamescene.sensors;
 
 import com.badlogic.gdx.physics.box2d.Body;
-import com.btuso.testament.scene.gamescene.MobFlags;
+import com.btuso.testament.mediator.Data;
+import com.btuso.testament.mediator.DataMediator;
 
 public class TeleportSensor implements CollitionSensor {
 
@@ -10,8 +11,9 @@ public class TeleportSensor implements CollitionSensor {
     }
 
     @Override
-    public void onEndContact(Body mob) {
-        mob.setUserData(MobFlags.TELEPORT);
+    public void onEndContact(Body collider) {
+        DataMediator mediator = (DataMediator) collider.getUserData();
+        mediator.broadcast(Data.TELEPORT);
     }
 
 }

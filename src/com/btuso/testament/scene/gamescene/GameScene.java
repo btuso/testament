@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.GameContext;
 import com.btuso.testament.mediator.EntityDataMediator;
-import com.btuso.testament.scene.gamescene.components.MobSpawner;
+import com.btuso.testament.scene.gamescene.components.MobSpawn;
 import com.btuso.testament.scene.gamescene.components.SensorContactHandler;
 import com.btuso.testament.scene.gamescene.factory.GameSceneEntityFactory;
 import com.btuso.testament.scene.gamescene.sensors.DespawnSensor;
@@ -31,7 +31,7 @@ public class GameScene extends Scene {
     private final GameContext context;
     private FixedStepPhysicsWorld physicsWorld;
     private GameSceneEntityFactory entityFactory;
-    private MobSpawner mobSpawner;
+    private MobSpawn mobSpawner;
     private SensorContactHandler contactHandler;
     private IEntity upperStairs;
     private IEntity lowerStairs;
@@ -100,7 +100,7 @@ public class GameScene extends Scene {
         this.attachChild(mobs);
         float[] spawnCoords = calculateSpawnCoordinates(upperStairs);
         float[] teleportCoords = calculateSpawnCoordinates(lowerStairs);
-        mobSpawner = new MobSpawner(spawnCoords, teleportCoords, MOB_SPAWN_INTERVAL, mobs, physicsWorld, entityFactory);
+        mobSpawner = new MobSpawn(spawnCoords, teleportCoords, MOB_SPAWN_INTERVAL, mobs, physicsWorld, entityFactory);
     }
 
     private float[] calculateSpawnCoordinates(IEntity stairs) {

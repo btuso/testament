@@ -1,6 +1,7 @@
 package com.btuso.testament.scene.gamescene.factory;
 
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.AnimationData;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
@@ -10,6 +11,7 @@ import com.btuso.testament.scene.gamescene.GameSceneAssets;
 
 public class GameSceneSpriteFactory {
 
+    private static final int FRAME_DURATION = 100;
     private final VertexBufferObjectManager vertexBuffer;
     private final GameSceneTextureFactory textureFactory;
 
@@ -33,10 +35,19 @@ public class GameSceneSpriteFactory {
     public AnimatedSprite createBat() {
         TiledTextureRegion textureRegion = textureFactory.getTiledTextureRegionFor(GameSceneAssets.BAT);
         AnimatedSprite sprite = new AnimatedSprite(0, 0, textureRegion, vertexBuffer);
-        long[] durations = { 100, 100, 100, 100 };
-        sprite.animate(durations, 0, 3, true);
+        sprite.animate(createBatAnimation());
         sprite.setRotation(30f);
         return sprite;
+    }
+
+    public AnimationData createBatAnimation() {
+        long[] durations = { FRAME_DURATION, FRAME_DURATION, FRAME_DURATION, FRAME_DURATION };
+        return new AnimationData(durations, 0, 3, true);
+    }
+
+    public AnimationData createBatAttackAnimation() {
+        long[] durations = { FRAME_DURATION, FRAME_DURATION };
+        return new AnimationData(durations, 4, 5, 2);
     }
 
     public AnimatedSprite createPlayer() {

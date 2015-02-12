@@ -2,13 +2,16 @@ package com.btuso.testament.scene.gamescene.factory;
 
 import org.andengine.entity.Entity;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.AnimationData;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.GameContext;
+import com.btuso.testament.mediator.DataMediator;
 import com.btuso.testament.mediator.EntityDataMediator;
+import com.btuso.testament.scene.gamescene.components.AttackAnimation;
 import com.btuso.testament.scene.gamescene.components.Despawn;
 import com.btuso.testament.scene.gamescene.components.Health;
 import com.btuso.testament.scene.gamescene.components.Movement;
@@ -69,20 +72,30 @@ public class GameSceneEntityFactory {
     }
 
     public PhysicsConnector createBat(float teleportX, float teleportY) {
-        AnimatedSprite bat = sprites.createBat();
-        Body body = physics.createBatPhysicBody(bat);
-        bat.registerUpdateHandler(new Movement(body));
-        bat.registerUpdateHandler(new Teleport(body, teleportX, teleportY));
-        bat.registerUpdateHandler(new Despawn(body));
-        return new PhysicsConnector(bat, body);
+        AnimatedSprite sprite = sprites.createBat();
+        Body body = physics.createBatPhysicBody(sprite);
+        DataMediator mediator = createAndSetMediatorTo(body);
+        sprite.registerUpdateHandler(new Movement(body));
+        sprite.registerUpdateHandler(new Teleport(body, mediator, teleportX, teleportY));
+        sprite.registerUpdateHandler(new Despawn(body, mediator));
+        AnimationData normal = sprites.createBatAnimation();
+        AnimationData attack = sprites.createBatAttackAnimation();
+        sprite.registerUpdateHandler(new AttackAnimation(sprite, mediator, normal, attack));
+        return new PhysicsConnector(sprite, body);
+    }
+
+    public DataMediator createAndSetMediatorTo(Body body) {
+        EntityDataMediator dataMediator = new EntityDataMediator();
+        body.setUserData(dataMediator);
+        return dataMediator;
     }
 
     public PhysicsConnector createPlayer() {
         AnimatedSprite player = sprites.createPlayer();
         Body body = physics.createSensor(player);
         EntityDataMediator dataMediator = new EntityDataMediator();
-        player.registerUpdateHandler(new Health(dataMediator, 5));
         player.setUserData(dataMediator);
+        player.registerUpdateHandler(new Health(dataMediator, 5));
         return new PhysicsConnector(player, body);
     }
 }

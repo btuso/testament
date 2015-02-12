@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import android.util.Log;
+import com.btuso.testament.Logger;
 
 public class EntityDataMediator implements DataMediator {
 
@@ -12,13 +12,13 @@ public class EntityDataMediator implements DataMediator {
 
     @Override
     public void registerListener(DataListener listener) {
-        Log.d("Mediator", "Registering listener: " + listener.getClass().getSimpleName());
+        Logger.log("Registering listener: " + listener.getClass().getSimpleName());
         listeners.add(listener);
     }
 
     @Override
     public void broadcast(Data data) {
-        Log.d("Mediator", "Broadcasting: " + data);
+        Logger.log("Broadcasting: " + data);
         Iterator<DataListener> it = listeners.iterator();
         while (it.hasNext()) {
             DataListener dataListener = it.next();

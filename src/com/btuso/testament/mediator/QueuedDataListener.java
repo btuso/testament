@@ -3,7 +3,7 @@ package com.btuso.testament.mediator;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
+import com.btuso.testament.Logger;
 
 public class QueuedDataListener implements DataListener {
 
@@ -15,7 +15,7 @@ public class QueuedDataListener implements DataListener {
         if (dirty) {
             // TODO think about how to deal with the queue not being modified in
             // the update, since no warning would show up. Maybe a default limit
-            Log.d(this.getClass().getSimpleName(), "Queue was has not been cleared since last operation.");
+            Logger.log(this.getClass().getSimpleName() + ": Queue was has not been cleared since last operation.");
         }
         queue.add(data);
     }

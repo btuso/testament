@@ -11,7 +11,7 @@ import org.andengine.extension.physics.box2d.PhysicsConnector;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.scene.gamescene.factory.GameSceneEntityFactory;
 
-public class MobSpawner implements IUpdateHandler {
+public class MobSpawn implements IUpdateHandler {
 
     private final float[] spawn;
     private final float[] teleport;
@@ -22,8 +22,8 @@ public class MobSpawner implements IUpdateHandler {
 
     private float timePassed = 0f;
 
-    public MobSpawner(float[] spawn, float[] teleport, float interval, Entity target,
-            FixedStepPhysicsWorld physicsWorld, GameSceneEntityFactory factory) {
+    public MobSpawn(float[] spawn, float[] teleport, float interval, Entity target, FixedStepPhysicsWorld physicsWorld,
+            GameSceneEntityFactory factory) {
         this.spawn = Arrays.copyOf(spawn, 2);
         this.teleport = Arrays.copyOf(teleport, 2);
         this.interval = interval;
