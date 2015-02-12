@@ -37,7 +37,7 @@ public class GameSceneTextureFactory {
 
     private void createTextureAtlases() {
         atlases.put(TextureType.BACKGROUND, createBuildableAtlas(290, 540, TextureType.BACKGROUND));
-        atlases.put(TextureType.MOB, createBuildableAtlas(200, 68, TextureType.MOB));
+        atlases.put(TextureType.MOB, createBuildableAtlas(200, 80, TextureType.MOB));
     }
 
     private BuildableBitmapTextureAtlas createBuildableAtlas(int width, int height, TextureType texType) {

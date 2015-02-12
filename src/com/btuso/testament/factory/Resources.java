@@ -7,5 +7,6 @@ public final class Resources {
     public static final String GS_STAIRS = GAME_SCENE + "tower/stairs.jpg";
     public static final String GS_MIDDLE = GAME_SCENE + "tower/middle.jpg";
     public static final String GS_BAT = GAME_SCENE + "mobs/bat.png";
+    public static final String GS_PLAYER = GAME_SCENE + "player.png";
 
 }

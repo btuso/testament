@@ -20,16 +20,14 @@ public class GameScenePhysicsFactory {
     }
 
     public Body createBatPhysicBody(Sprite batSprite) {
-        Body body = createMobPhysicBody(batSprite);
-        body.setLinearVelocity(-2f, -0.25f);
-        return body;
+        return createCircularMobPhysicBody(batSprite);
     }
 
-    private Body createMobPhysicBody(Entity mob) {
-        return PhysicsFactory.createBoxBody(physicsWorld, mob, BodyType.DynamicBody, MOB_FIXTURE_DEF);
+    private Body createCircularMobPhysicBody(Entity mob) {
+        return PhysicsFactory.createCircleBody(physicsWorld, mob, BodyType.DynamicBody, MOB_FIXTURE_DEF);
     }
 
-    public Body createZoneSensor(IEntity zoneEntity) {
+    public Body createSensor(IEntity zoneEntity) {
         final FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor = true;
         return PhysicsFactory.createBoxBody(physicsWorld, zoneEntity, BodyType.StaticBody, fixtureDef);

@@ -7,7 +7,8 @@ public enum GameSceneAssets {
     STAIRS(TextureType.BACKGROUND, Resources.GS_STAIRS),
     LOWER_HALF(TextureType.BACKGROUND, Resources.GS_LOWER_HALF),
     MIDDLE(TextureType.BACKGROUND, Resources.GS_MIDDLE),
-    BAT(TextureType.MOB, Resources.GS_BAT, 6, 1);
+    BAT(TextureType.MOB, Resources.GS_BAT, 6, 1),
+    PLAYER(TextureType.MOB, Resources.GS_PLAYER, 4, 1);
 
     private TextureType textureType;
     private String resource;

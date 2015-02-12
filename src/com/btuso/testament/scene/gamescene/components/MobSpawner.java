@@ -4,12 +4,12 @@ import java.util.Arrays;
 
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.Entity;
-import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.IEntity;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 
 import com.badlogic.gdx.physics.box2d.Body;
-import com.btuso.testament.scene.gamescene.factory.GameSceneSpriteFactory;
+import com.btuso.testament.scene.gamescene.factory.GameSceneEntityFactory;
 
 public class MobSpawner implements IUpdateHandler {
 
@@ -17,13 +17,13 @@ public class MobSpawner implements IUpdateHandler {
     private final float[] teleport;
     private final float interval;
     private final Entity target;
-    private final GameSceneSpriteFactory factory;
+    private final GameSceneEntityFactory factory;
     private final FixedStepPhysicsWorld physicsWorld;
 
     private float timePassed = 0f;
 
     public MobSpawner(float[] spawn, float[] teleport, float interval, Entity target,
-            FixedStepPhysicsWorld physicsWorld, GameSceneSpriteFactory factory) {
+            FixedStepPhysicsWorld physicsWorld, GameSceneEntityFactory factory) {
         this.spawn = Arrays.copyOf(spawn, 2);
         this.teleport = Arrays.copyOf(teleport, 2);
         this.interval = interval;
@@ -44,11 +44,12 @@ public class MobSpawner implements IUpdateHandler {
 
     private void spawnMob() {
         // Create
-        AnimatedSprite mob = factory.createBat(teleport[0], teleport[1]);
-        Body body = (Body) mob.getUserData();
+        PhysicsConnector connector = factory.createBat(teleport[0], teleport[1]);
+        IEntity mob = connector.getEntity();
+        Body body = connector.getBody();
         // Attach
         target.attachChild(mob);
-        physicsWorld.registerPhysicsConnector(new PhysicsConnector(mob, body));
+        physicsWorld.registerPhysicsConnector(connector);
         // Adjust
         mob.setPosition(-100f, -100f); // To avoid flicker in (0, 0) position
         body.setTransform(spawn[0], spawn[1], body.getAngle());

@@ -5,11 +5,11 @@ import org.andengine.engine.handler.IUpdateHandler;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.scene.gamescene.MobFlags;
 
-public class Despawner implements IUpdateHandler {
+public class Despawn implements IUpdateHandler {
 
     private final Body body;
 
-    public Despawner(Body body) {
+    public Despawn(Body body) {
         this.body = body;
     }
 
@@ -17,7 +17,7 @@ public class Despawner implements IUpdateHandler {
     public void onUpdate(float pSecondsElapsed) {
         if (body.getUserData() == MobFlags.DESPAWN) {
             body.setUserData(MobFlags.NONE);
-            body.applyAngularImpulse(200f);
+            body.applyAngularImpulse(200f); // TODO proper mob recycling
         }
     }
 

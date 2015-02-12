@@ -5,7 +5,7 @@ import org.andengine.engine.handler.IUpdateHandler;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.scene.gamescene.MobFlags;
 
-public class Teleporter implements IUpdateHandler {
+public class Teleport implements IUpdateHandler {
 
     private static final float CAST_TIME = 3f;
     private final Body body;
@@ -14,7 +14,7 @@ public class Teleporter implements IUpdateHandler {
     private float castingTime = 0;
     private boolean shouldTeleport = false;
 
-    public Teleporter(Body body, float x, float y) {
+    public Teleport(Body body, float x, float y) {
         this.body = body;
         this.x = x;
         this.y = y;

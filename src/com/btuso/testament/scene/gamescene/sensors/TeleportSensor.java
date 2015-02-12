@@ -1,7 +1,7 @@
-package com.btuso.testament.scene.gamescene;
+package com.btuso.testament.scene.gamescene.sensors;
 
 import com.badlogic.gdx.physics.box2d.Body;
-import com.btuso.testament.scene.gamescene.sensors.CollitionSensor;
+import com.btuso.testament.scene.gamescene.MobFlags;
 
 public class TeleportSensor implements CollitionSensor {
 
