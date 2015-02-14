@@ -1,31 +1,21 @@
 package com.btuso.testament.scene.gamescene.components;
 
-import org.andengine.engine.handler.IUpdateHandler;
-
 import com.btuso.testament.Logger;
+import com.btuso.testament.component.QueuedDataComponent;
 import com.btuso.testament.mediator.Data;
-import com.btuso.testament.mediator.EntityDataMediator;
-import com.btuso.testament.mediator.QueuedDataListener;
+import com.btuso.testament.mediator.DataMediator;
 
-public class Health implements IUpdateHandler {
+public class Health extends QueuedDataComponent {
 
-    private final QueuedDataListener dataQueue = new QueuedDataListener();
-
-    public Health(EntityDataMediator entityData, int healthPoints) {
-        entityData.registerListener(dataQueue);
+    public Health(DataMediator mediator, int healthPoints) {
+        super(mediator);
     }
 
     @Override
-    public void onUpdate(float pSecondsElapsed) {
+    public void update(float pSecondsElapsed) {
         if (dataQueue.contains(Data.HIT)) {
             Logger.log("Hit");
         }
-        dataQueue.clearQueue();
-    }
-
-    @Override
-    public void reset() {
-        dataQueue.clearQueue();
     }
 
 }

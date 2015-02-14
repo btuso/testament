@@ -13,7 +13,7 @@ public class DespawnSensor implements CollitionSensor {
     @Override
     public void onEndContact(Body collider) {
         DataMediator mediator = (DataMediator) collider.getUserData();
-        mediator.broadcast(Data.DESPAWN);
+        mediator.broadcast(Data.DEATH);
     }
 
 }

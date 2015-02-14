@@ -12,11 +12,13 @@ import org.andengine.util.adt.color.Color;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.btuso.testament.GameContext;
 import com.btuso.testament.mediator.EntityDataMediator;
 import com.btuso.testament.scene.gamescene.components.MobSpawn;
 import com.btuso.testament.scene.gamescene.components.SensorContactHandler;
 import com.btuso.testament.scene.gamescene.factory.GameSceneEntityFactory;
+import com.btuso.testament.scene.gamescene.sensors.AnimationSensor;
 import com.btuso.testament.scene.gamescene.sensors.DespawnSensor;
 import com.btuso.testament.scene.gamescene.sensors.HitSensor;
 import com.btuso.testament.scene.gamescene.sensors.TeleportSensor;
@@ -120,12 +122,13 @@ public class GameScene extends Scene {
 
     private void createPlayer() {
         PhysicsConnector connector = entityFactory.createPlayer();
-        Body body = connector.getBody();
+        Body playerBody = connector.getBody();
         IEntity player = connector.getEntity();
         this.attachChild(player);
         physicsWorld.registerPhysicsConnector(connector);
-        movePlayerToStartingPosition(body);
-        contactHandler.registerSensor(body, new HitSensor((EntityDataMediator) player.getUserData()));
+        movePlayerToStartingPosition(playerBody);
+        contactHandler.registerSensor(playerBody, new HitSensor((EntityDataMediator) player.getUserData()));
+        createPlayerAnimationSensor(playerBody, player);
     }
 
     private void movePlayerToStartingPosition(Body body) {
@@ -133,5 +136,17 @@ public class GameScene extends Scene {
         float y = lowerStairs.getHeight() * 0.5f - PLAYER_Y_OFFSET;
         float[] playerCoords = lowerStairs.convertLocalCoordinatesToSceneCoordinates(x, y);
         body.setTransform(toPhysUnit(playerCoords[0]), toPhysUnit(playerCoords[1]), body.getAngle());
+    }
+
+    private void createPlayerAnimationSensor(Body playerBody, IEntity player) {
+        Body animationSensor = entityFactory.createAnimationSensor(player, playerBody.getWorldCenter());
+        weldBodiesAt(playerBody, animationSensor, playerBody.getWorldCenter());
+        contactHandler.registerSensor(animationSensor, new AnimationSensor());
+    }
+
+    private void weldBodiesAt(Body first, Body second, Vector2 position) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.initialize(first, second, position);
+        physicsWorld.createJoint(jointDef);
     }
 }

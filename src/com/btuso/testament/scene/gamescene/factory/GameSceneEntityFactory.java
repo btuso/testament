@@ -1,20 +1,24 @@
 package com.btuso.testament.scene.gamescene.factory;
 
 import org.andengine.entity.Entity;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.AnimationData;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.GameContext;
 import com.btuso.testament.mediator.DataMediator;
 import com.btuso.testament.mediator.EntityDataMediator;
 import com.btuso.testament.scene.gamescene.components.AttackAnimation;
-import com.btuso.testament.scene.gamescene.components.Despawn;
 import com.btuso.testament.scene.gamescene.components.Health;
+import com.btuso.testament.scene.gamescene.components.MobSpawn;
 import com.btuso.testament.scene.gamescene.components.Movement;
+import com.btuso.testament.scene.gamescene.components.Recycle;
 import com.btuso.testament.scene.gamescene.components.Teleport;
 
 public class GameSceneEntityFactory {
@@ -71,20 +75,21 @@ public class GameSceneEntityFactory {
         return new PhysicsConnector(sensorEntity, sensorBody);
     }
 
-    public PhysicsConnector createBat(float teleportX, float teleportY) {
+    public PhysicsConnector createBat(float teleportX, float teleportY, MobSpawn mobSpawn) {
         AnimatedSprite sprite = sprites.createBat();
         Body body = physics.createBatPhysicBody(sprite);
+        PhysicsConnector connector = new PhysicsConnector(sprite, body);
         DataMediator mediator = createAndSetMediatorTo(body);
-        sprite.registerUpdateHandler(new Movement(body));
-        sprite.registerUpdateHandler(new Teleport(body, mediator, teleportX, teleportY));
-        sprite.registerUpdateHandler(new Despawn(body, mediator));
         AnimationData normal = sprites.createBatAnimation();
         AnimationData attack = sprites.createBatAttackAnimation();
+        sprite.registerUpdateHandler(new Movement(body));
+        sprite.registerUpdateHandler(new Teleport(body, mediator, teleportX, teleportY));
         sprite.registerUpdateHandler(new AttackAnimation(sprite, mediator, normal, attack));
-        return new PhysicsConnector(sprite, body);
+        sprite.registerUpdateHandler(new Recycle(connector, mediator, mobSpawn));
+        return connector;
     }
 
-    public DataMediator createAndSetMediatorTo(Body body) {
+    private DataMediator createAndSetMediatorTo(Body body) {
         EntityDataMediator dataMediator = new EntityDataMediator();
         body.setUserData(dataMediator);
         return dataMediator;
@@ -97,5 +102,13 @@ public class GameSceneEntityFactory {
         player.setUserData(dataMediator);
         player.registerUpdateHandler(new Health(dataMediator, 5));
         return new PhysicsConnector(player, body);
+    }
+
+    public Body createAnimationSensor(IEntity player, Vector2 center) {
+        Entity entity = new Entity(0, 0, SENSOR_WIDTH, player.getHeight());
+        Body sensorBody = physics.createSensor(entity);
+        float x = ((player.getWidth() + entity.getWidth()) * 0.5f) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+        sensorBody.setTransform(center.x + x, center.y, sensorBody.getAngle());
+        return sensorBody;
     }
 }
