@@ -4,21 +4,18 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.btuso.testament.mediator.Data;
 import com.btuso.testament.mediator.DataMediator;
 
-public class HitSensor implements CollitionSensor {
-
-    private final DataMediator entityData;
-
-    public HitSensor(DataMediator entityData) {
-        this.entityData = entityData;
-    }
+public class OnGroundSensor implements CollitionSensor {
 
     @Override
     public void onBeginContact(Body collider) {
-        entityData.broadcast(Data.HIT);
+        DataMediator mediator = (DataMediator) collider.getUserData();
+        mediator.broadcast(Data.ON_GROUND);
     }
 
     @Override
     public void onEndContact(Body collider) {
+        DataMediator mediator = (DataMediator) collider.getUserData();
+        mediator.broadcast(Data.OFF_GROUND);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.btuso.testament.scene.gamescene.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,14 +14,15 @@ import com.btuso.testament.scene.gamescene.sensors.CollitionSensor;
 
 public class SensorContactHandler implements ContactListener {
 
-    private Map<Body, CollitionSensor> registeredSensors = new HashMap<Body, CollitionSensor>();
+    private Map<Fixture, CollitionSensor> registeredSensors = new HashMap<Fixture, CollitionSensor>();
 
     public void registerSensor(Body body, CollitionSensor sensor) {
-        registeredSensors.put(body, sensor);
+        ArrayList<Fixture> fixtures = body.getFixtureList();
+        registeredSensors.put(fixtures.get(0), sensor);
     }
 
-    public void unregisterSensor(Body body) {
-        registeredSensors.remove(body);
+    public void registerSensor(Fixture fixture, CollitionSensor sensor) {
+        registeredSensors.put(fixture, sensor);
     }
 
     @Override
@@ -48,17 +50,16 @@ public class SensorContactHandler implements ContactListener {
     }
 
     private CollitionSensor getSensor(Fixture first, Fixture second) {
-        CollitionSensor sensor = registeredSensors.get(first.getBody());
+        CollitionSensor sensor = registeredSensors.get(first);
         if (sensor == null) {
-            sensor = registeredSensors.get(second.getBody());
+            sensor = registeredSensors.get(second);
         }
         // Mobs collided, weird. TODO check & review this
         return sensor != null ? sensor : emptyCollitionSensor;
     }
 
     private Body getMob(Fixture first, Fixture second) {
-        final Body firstBody = first.getBody();
-        return registeredSensors.get(firstBody) == null ? firstBody : second.getBody();
+        return registeredSensors.get(first) == null ? first.getBody() : second.getBody();
     }
 
     private final CollitionSensor emptyCollitionSensor = new CollitionSensor() {

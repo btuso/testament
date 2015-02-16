@@ -16,6 +16,7 @@ import com.btuso.testament.mediator.DataMediator;
 import com.btuso.testament.mediator.EntityDataMediator;
 import com.btuso.testament.scene.gamescene.components.AttackAnimation;
 import com.btuso.testament.scene.gamescene.components.Health;
+import com.btuso.testament.scene.gamescene.components.Jump;
 import com.btuso.testament.scene.gamescene.components.MobSpawn;
 import com.btuso.testament.scene.gamescene.components.Movement;
 import com.btuso.testament.scene.gamescene.components.Recycle;
@@ -27,6 +28,7 @@ public class GameSceneEntityFactory {
     public static final int LOWER_STAIRS = 2;
 
     private static final float SENSOR_WIDTH = 10f;
+    private static final float SENSOR_HEIGHT = 10f;
 
     private final GameSceneSpriteFactory sprites;
     private final GameScenePhysicsFactory physics;
@@ -69,10 +71,14 @@ public class GameSceneEntityFactory {
         return entityBelow.getY() + entityBelow.getHeight() * 0.5f + currentEntity.getHeight() * 0.5f;
     }
 
-    public PhysicsConnector createSensor(float height) {
-        Entity sensorEntity = new Entity(0, 0, SENSOR_WIDTH, height);
+    public PhysicsConnector createSensor(float height, float[] position) {
+        Entity sensorEntity = new Entity(position[0], position[1], SENSOR_WIDTH, height);
         Body sensorBody = physics.createSensor(sensorEntity);
         return new PhysicsConnector(sensorEntity, sensorBody);
+    }
+
+    public Body createBodyPin(Body body) {
+        return physics.createPin(body);
     }
 
     public PhysicsConnector createBat(float teleportX, float teleportY, MobSpawn mobSpawn) {
@@ -90,17 +96,19 @@ public class GameSceneEntityFactory {
     }
 
     private DataMediator createAndSetMediatorTo(Body body) {
-        EntityDataMediator dataMediator = new EntityDataMediator();
+        DataMediator dataMediator = new EntityDataMediator();
         body.setUserData(dataMediator);
         return dataMediator;
     }
 
-    public PhysicsConnector createPlayer() {
-        AnimatedSprite player = sprites.createPlayer();
-        Body body = physics.createSensor(player);
-        EntityDataMediator dataMediator = new EntityDataMediator();
+    public PhysicsConnector createPlayer(float[] position) {
+        AnimatedSprite player = sprites.createPlayer(position);
+        Body body = physics.createPlayer(player);
+        DataMediator dataMediator = new EntityDataMediator();
         player.setUserData(dataMediator);
+        body.setUserData(dataMediator);
         player.registerUpdateHandler(new Health(dataMediator, 5));
+        player.registerUpdateHandler(new Jump(body, dataMediator));
         return new PhysicsConnector(player, body);
     }
 
@@ -111,4 +119,11 @@ public class GameSceneEntityFactory {
         sensorBody.setTransform(center.x + x, center.y, sensorBody.getAngle());
         return sensorBody;
     }
+
+    public Body createGround(IEntity player) {
+        float y = player.getY() - (player.getHeight() + SENSOR_HEIGHT) * 0.5f;
+        Entity entity = new Entity(player.getX(), y, player.getWidth(), SENSOR_HEIGHT);
+        return physics.createGroundBody(entity);
+    }
+
 }

@@ -1,9 +1,12 @@
 package com.btuso.testament.mediator;
 
 public enum Data {
+    // TODO later on, turn this class into something proper
     HIT,
     ATTACK_ANIMATION,
     DEATH,
-    TELEPORT
-    // TODO later on, turn this class into something proper
+    TELEPORT,
+    TAP,
+    ON_GROUND,
+    OFF_GROUND
 }

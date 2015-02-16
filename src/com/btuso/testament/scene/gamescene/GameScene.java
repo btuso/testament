@@ -1,5 +1,7 @@
 package com.btuso.testament.scene.gamescene;
 
+import java.util.ArrayList;
+
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
@@ -10,10 +12,14 @@ import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.util.adt.color.Color;
 
+import android.hardware.SensorManager;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.btuso.testament.GameContext;
+import com.btuso.testament.mediator.DataMediator;
 import com.btuso.testament.mediator.EntityDataMediator;
 import com.btuso.testament.scene.gamescene.components.MobSpawn;
 import com.btuso.testament.scene.gamescene.components.SensorContactHandler;
@@ -21,6 +27,7 @@ import com.btuso.testament.scene.gamescene.factory.GameSceneEntityFactory;
 import com.btuso.testament.scene.gamescene.sensors.AnimationSensor;
 import com.btuso.testament.scene.gamescene.sensors.DespawnSensor;
 import com.btuso.testament.scene.gamescene.sensors.HitSensor;
+import com.btuso.testament.scene.gamescene.sensors.OnGroundSensor;
 import com.btuso.testament.scene.gamescene.sensors.TeleportSensor;
 
 public class GameScene extends Scene {
@@ -37,6 +44,7 @@ public class GameScene extends Scene {
     private SensorContactHandler contactHandler;
     private IEntity upperStairs;
     private IEntity lowerStairs;
+    private IEntity player;
 
     public GameScene(GameContext context) {
         this.context = context;
@@ -58,12 +66,18 @@ public class GameScene extends Scene {
         addStairSensorsToScene();
         createMobSpawner();
         createPlayer();
-        DebugRenderer debug = new DebugRenderer(physicsWorld, context.getVertexBuffer());
-        this.attachChild(debug);
+        createGroundForPlayer();
+        this.setOnSceneTouchListener(new TouchInputController((DataMediator) player.getUserData()));
+        this.attachChild(new DebugRenderer(physicsWorld, context.getVertexBuffer()));
+    }
+
+    private void createGroundForPlayer() {
+        Body sensor = entityFactory.createGround(player);
+        contactHandler.registerSensor(sensor, new OnGroundSensor());
     }
 
     private void createPhysics() {
-        physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0f, 0f), false, 8, 3);
+        physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0f, -SensorManager.GRAVITY_EARTH), false, 8, 3);
         contactHandler = new SensorContactHandler();
         physicsWorld.setContactListener(contactHandler);
     }
@@ -85,16 +99,19 @@ public class GameScene extends Scene {
     }
 
     private Body attachStairSensorToScene(IEntity stairs) {
-        PhysicsConnector connector = entityFactory.createSensor(stairs.getHeight());
-        Body sensorBody = connector.getBody();
-        physicsWorld.registerPhysicsConnector(connector);
         float[] sceneCoords = stairs.convertLocalCoordinatesToSceneCoordinates(0f, stairs.getHeight() * 0.5f);
-        sensorBody.setTransform(toPhysUnit(sceneCoords[0]), toPhysUnit(sceneCoords[1]), sensorBody.getAngle());
+        PhysicsConnector connector = entityFactory.createSensor(stairs.getHeight(), sceneCoords);
+        physicsWorld.registerPhysicsConnector(connector);
+        Body sensorBody = connector.getBody();
+        Body sensorPin = entityFactory.createBodyPin(sensorBody);
+        weldBodiesAt(sensorPin, sensorBody, sensorPin.getWorldCenter());
         return sensorBody;
     }
 
-    private float toPhysUnit(float pixUnit) {
-        return pixUnit * (1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+    private void weldBodiesAt(Body first, Body second, Vector2 position) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.initialize(first, second, position);
+        physicsWorld.createJoint(jointDef);
     }
 
     private void createMobSpawner() {
@@ -115,38 +132,28 @@ public class GameScene extends Scene {
     private float[] toPhysUnit(float[] pixUnits) {
         float[] physUnits = new float[pixUnits.length];
         for (int i = 0; i < physUnits.length; i++) {
-            physUnits[i] = toPhysUnit(pixUnits[i]);
+            physUnits[i] = pixUnits[i] / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
         }
         return physUnits;
     }
 
     private void createPlayer() {
-        PhysicsConnector connector = entityFactory.createPlayer();
-        Body playerBody = connector.getBody();
-        IEntity player = connector.getEntity();
+        PhysicsConnector connector = entityFactory.createPlayer(calculatePlayerPosition());
+        player = connector.getEntity();
         this.attachChild(player);
+        Body playerBody = connector.getBody();
         physicsWorld.registerPhysicsConnector(connector);
-        movePlayerToStartingPosition(playerBody);
-        contactHandler.registerSensor(playerBody, new HitSensor((EntityDataMediator) player.getUserData()));
-        createPlayerAnimationSensor(playerBody, player);
+        // TODO REFACTOR
+        ArrayList<Fixture> fixtures = playerBody.getFixtureList();
+        contactHandler.registerSensor(fixtures.get(0), new HitSensor((EntityDataMediator) player.getUserData()));
+        contactHandler.registerSensor(fixtures.get(1), new AnimationSensor());
     }
 
-    private void movePlayerToStartingPosition(Body body) {
+    private float[] calculatePlayerPosition() {
         float x = lowerStairs.getWidth() * 0.5f - PLAYER_X_OFFSET;
         float y = lowerStairs.getHeight() * 0.5f - PLAYER_Y_OFFSET;
         float[] playerCoords = lowerStairs.convertLocalCoordinatesToSceneCoordinates(x, y);
-        body.setTransform(toPhysUnit(playerCoords[0]), toPhysUnit(playerCoords[1]), body.getAngle());
+        return playerCoords;
     }
 
-    private void createPlayerAnimationSensor(Body playerBody, IEntity player) {
-        Body animationSensor = entityFactory.createAnimationSensor(player, playerBody.getWorldCenter());
-        weldBodiesAt(playerBody, animationSensor, playerBody.getWorldCenter());
-        contactHandler.registerSensor(animationSensor, new AnimationSensor());
-    }
-
-    private void weldBodiesAt(Body first, Body second, Vector2 position) {
-        WeldJointDef jointDef = new WeldJointDef();
-        jointDef.initialize(first, second, position);
-        physicsWorld.createJoint(jointDef);
-    }
 }

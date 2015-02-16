@@ -50,9 +50,9 @@ public class GameSceneSpriteFactory {
         return new AnimationData(durations, 4, 5, 2);
     }
 
-    public AnimatedSprite createPlayer() {
+    public AnimatedSprite createPlayer(float[] position) {
         TiledTextureRegion textureRegion = textureFactory.getTiledTextureRegionFor(GameSceneAssets.PLAYER);
-        AnimatedSprite sprite = new AnimatedSprite(0, 0, textureRegion, vertexBuffer);
+        AnimatedSprite sprite = new AnimatedSprite(position[0], position[1], textureRegion, vertexBuffer);
         long[] durations = { 100, 100, 100, 100 };
         sprite.animate(durations, true);
         return sprite;

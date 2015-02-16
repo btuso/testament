@@ -33,6 +33,7 @@ public class Teleport extends QueuedDataComponent {
             castingTime += pSecondsElapsed;
             if (castingTime >= CAST_TIME) {
                 shouldTeleport = false;
+                castingTime = 0;
                 body.setTransform(x, y, body.getAngle());
                 body.setActive(true);
             }
